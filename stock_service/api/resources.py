@@ -35,14 +35,19 @@ class StockResource(Resource):
         try:
             response = urllib.request.urlopen(StockResource.format_url_external(stock_code))
             data = response.read()
-            result = json.loads(data)
+            json_load = json.loads(data)
         except URLError:
             raise GenericException("An error trying request data from external resource")
+        
+        try:
+            result = json_load["symbols"][0]
+        except KeyError:
+            raise DataNotFoundException("Data not found")
 
         return result
 
     @classmethod
-    def convert_date(cls, date: str, format: str = "%Y-%m-%d"):
+    def convert_date(cls, date: str, format: str = "%Y-%m-%d") -> datetime.date:
         """Convert date str to date format"""
 
         try:
@@ -51,7 +56,7 @@ class StockResource(Resource):
             raise GenericException("Error to convert date")
     
     @classmethod
-    def convert_time(cls, time: str, format: str = "%H:%M:%S"):
+    def convert_time(cls, time: str, format: str = "%H:%M:%S") -> datetime.time:
         """Convert time str to time format"""
 
         try:
@@ -63,12 +68,7 @@ class StockResource(Resource):
         stock_data_obj = None
         schema = StockSchema()
 
-        data = StockResource.get_external_data(stock_code)
-
-        try:
-            stock_data_obj = data["symbols"][0]
-        except KeyError:
-            raise DataNotFoundException("Data not found")
+        stock_data_obj = StockResource.get_external_data(stock_code)
         
         stock_data_obj["date"] = StockResource.convert_date(stock_data_obj["date"])
         stock_data_obj["time"] = StockResource.convert_time(stock_data_obj["time"])
