@@ -9,6 +9,8 @@ from stock_service.config import URL_EXTERNAL_STOCK
 
 import urllib.request, json, datetime
 
+from stock_service.exceptions import DataNotFoundException, GenericException
+
 
 class StockResource(Resource):
     """
@@ -20,34 +22,33 @@ class StockResource(Resource):
     def get_external_data(cls, stock_code):
         try:
             url = URL_EXTERNAL_STOCK.format(stock_code)
-        except AttributeError as e:
-            e.messages = {"error": "An internal error trying format URL from external resource"}
-            raise e
+        except AttributeError:
+            raise GenericException("An internal error trying format URL from external resource")
 
         try:
             response = urllib.request.urlopen(url)
             data = response.read()
             json_data = json.loads(data)
-        except URLError as e:
-            e.messages = {"error": "An error trying get data from external resource"}
-            raise e
+        except URLError:
+            raise GenericException("An error trying request data from external resource")
 
         return json_data
 
     def get(self, stock_code):
-        # TODO: Implement the call to the stooq service here. The stock code to query the API
-        # should come in a query parameter.
         stock_data_obj = None
         schema = StockSchema()
 
         data = StockResource.get_external_data(stock_code)
 
-        stock_data_obj = data["symbols"][0]
-        stock_data_obj["date"] = datetime.datetime.strptime(
-            stock_data_obj["date"], "%Y-%m-%d"
-        )
+        if hasattr(data, 'symbols'):
+            stock_data_obj = data["symbols"][0]
+            stock_data_obj["date"] = datetime.datetime.strptime(
+                stock_data_obj["date"], "%Y-%m-%dd"
+            )
 
-        time = datetime.datetime.strptime(stock_data_obj["time"], "%H:%M:%S")
-        stock_data_obj["time"] = time.time()
+            time = datetime.datetime.strptime(stock_data_obj["time"], "%H:%M:%S")
+            stock_data_obj["time"] = time.time()
+        else:
+            raise DataNotFoundException("Data not found")
 
         return schema.dump(stock_data_obj)
