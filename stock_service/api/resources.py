@@ -5,6 +5,8 @@ from flask_restful import Resource
 
 from stock_service.api.schemas import StockSchema
 
+import urllib.request, json
+
 
 class StockResource(Resource):
     """
@@ -18,4 +20,12 @@ class StockResource(Resource):
         # should come in a query parameter.
         stock_data_obj = None
         schema = StockSchema()
-        return schema.dump(stock_data_obj)
+
+        url = 'https://stooq.com/q/l/?s=aapl.us&f=sd2t2ohlcvn&h&e=json'
+
+        response = urllib.request.urlopen(url)
+        data = response.read()
+        dict = json.loads(data)
+        
+        #return schema.dump(stock_data_obj)
+        return dict
