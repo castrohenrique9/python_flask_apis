@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+from urllib.error import URLError
 from flask import request
 from flask_restful import Resource
 
@@ -15,6 +16,23 @@ class StockResource(Resource):
     them to our main API service. Currently we only get the data from a single external source:
     the stooq API.
     """
+    @classmethod
+    def get_external_data(cls, stock_code):
+        try:
+            url = URL_EXTERNAL_STOCK.format(stock_code)
+        except AttributeError as e:
+            e.messages = {"error": "An internal error trying format URL from external resource"}
+            raise e
+
+        try:
+            response = urllib.request.urlopen(url)
+            data = response.read()
+            json_data = json.loads(data)
+        except URLError as e:
+            e.messages = {"error": "An error trying get data from external resource"}
+            raise e
+
+        return json_data
 
     def get(self, stock_code):
         # TODO: Implement the call to the stooq service here. The stock code to query the API
@@ -22,13 +40,9 @@ class StockResource(Resource):
         stock_data_obj = None
         schema = StockSchema()
 
-        url = URL_EXTERNAL_STOCK.format(stock_code)
+        data = StockResource.get_external_data(stock_code)
 
-        response = urllib.request.urlopen(url)
-        data = response.read()
-        stock_data_obj = json.loads(data)
-
-        stock_data_obj = stock_data_obj["symbols"][0]
+        stock_data_obj = data["symbols"][0]
         stock_data_obj["date"] = datetime.datetime.strptime(
             stock_data_obj["date"], "%Y-%m-%d"
         )
