@@ -28,10 +28,12 @@ class StockResource(Resource):
         data = response.read()
         stock_data_obj = json.loads(data)
 
-        stock_data_obj = stock_data_obj['symbols'][0]
-        stock_data_obj['date'] = datetime.datetime.strptime(stock_data_obj['date'], "%Y-%m-%d")
+        stock_data_obj = stock_data_obj["symbols"][0]
+        stock_data_obj["date"] = datetime.datetime.strptime(
+            stock_data_obj["date"], "%Y-%m-%d"
+        )
 
-        time = datetime.datetime.strptime(stock_data_obj['time'], "%H:%M:%S")
-        stock_data_obj['time'] = time.time()
-        
+        time = datetime.datetime.strptime(stock_data_obj["time"], "%H:%M:%S")
+        stock_data_obj["time"] = time.time()
+
         return schema.dump(stock_data_obj)
