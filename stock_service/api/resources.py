@@ -5,7 +5,7 @@ from flask_restful import Resource
 
 from stock_service.api.schemas import StockSchema
 
-import urllib.request, json
+import urllib.request, json, datetime, time
 
 
 class StockResource(Resource):
@@ -26,6 +26,11 @@ class StockResource(Resource):
         response = urllib.request.urlopen(url)
         data = response.read()
         stock_data_obj = json.loads(data)
+
+        stock_data_obj = stock_data_obj['symbols'][0]
+        stock_data_obj['date'] = datetime.datetime.strptime(stock_data_obj['date'], "%Y-%m-%d")
+
+        time = datetime.datetime.strptime(stock_data_obj['time'], "%H:%M:%S")
+        stock_data_obj['time'] = time.time()
         
-        #return schema.dump(stock_data_obj)
-        return stock_data_obj
+        return schema.dump(stock_data_obj)
