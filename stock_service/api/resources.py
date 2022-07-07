@@ -34,16 +34,24 @@ class StockResource(Resource):
 
         return json_data
 
+    @classmethod
+    def convertDate(cls, date: str, format: str):
+        result: datetime
+
+        result = datetime.datetime.strptime(date, format)
+        return result
+        
+
     def get(self, stock_code):
         stock_data_obj = None
         schema = StockSchema()
 
         data = StockResource.get_external_data(stock_code)
 
-        if hasattr(data, 'symbols'):
+        if hasattr(data, "symbols"):
             stock_data_obj = data["symbols"][0]
             stock_data_obj["date"] = datetime.datetime.strptime(
-                stock_data_obj["date"], "%Y-%m-%dd"
+                stock_data_obj["date"], "%Y-%m-%d"
             )
 
             time = datetime.datetime.strptime(stock_data_obj["time"], "%H:%M:%S")
