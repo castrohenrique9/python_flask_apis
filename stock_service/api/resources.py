@@ -18,45 +18,59 @@ class StockResource(Resource):
     them to our main API service. Currently we only get the data from a single external source:
     the stooq API.
     """
+
+    
     @classmethod
-    def get_external_data(cls, stock_code):
+    def format_url_external(cls, stock_code: str) -> str:
         try:
-            url = URL_EXTERNAL_STOCK.format(stock_code)
+            return URL_EXTERNAL_STOCK.format(stock_code)
         except AttributeError:
             raise GenericException("An internal error trying format URL from external resource")
 
+    @classmethod
+    def get_external_data(cls, stock_code):
+        """Request data from external service with URL default"""
+        result: json
+
         try:
-            response = urllib.request.urlopen(url)
+            response = urllib.request.urlopen(StockResource.format_url_external(stock_code))
             data = response.read()
-            json_data = json.loads(data)
+            result = json.loads(data)
         except URLError:
             raise GenericException("An error trying request data from external resource")
 
-        return json_data
+        return result
 
     @classmethod
-    def convertDate(cls, date: str, format: str):
-        result: datetime
+    def convert_date(cls, date: str, format: str = "%Y-%m-%d"):
+        """Convert date str to date format"""
 
-        result = datetime.datetime.strptime(date, format)
-        return result
-        
+        try:
+            return datetime.datetime.strptime(date, format)
+        except ValueError:
+            raise GenericException("Error to convert date")
+    
+    @classmethod
+    def convert_time(cls, time: str, format: str = "%H:%M:%S"):
+        """Convert time str to time format"""
 
-    def get(self, stock_code):
+        try:
+            return datetime.datetime.strptime(time, format).time()
+        except ValueError:
+            raise GenericException("Error to convert date")
+
+    def get(self, stock_code: str):
         stock_data_obj = None
         schema = StockSchema()
 
         data = StockResource.get_external_data(stock_code)
 
-        if hasattr(data, "symbols"):
+        try:
             stock_data_obj = data["symbols"][0]
-            stock_data_obj["date"] = datetime.datetime.strptime(
-                stock_data_obj["date"], "%Y-%m-%d"
-            )
-
-            time = datetime.datetime.strptime(stock_data_obj["time"], "%H:%M:%S")
-            stock_data_obj["time"] = time.time()
-        else:
+        except KeyError:
             raise DataNotFoundException("Data not found")
+        
+        stock_data_obj["date"] = StockResource.convert_date(stock_data_obj["date"])
+        stock_data_obj["time"] = StockResource.convert_time(stock_data_obj["time"])
 
         return schema.dump(stock_data_obj)

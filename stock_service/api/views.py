@@ -29,7 +29,7 @@ def handle_error_404(e):
     return jsonify(e.message), 404
 
 @blueprint.errorhandler(Exception)
-def handle_error_500():
+def handle_error_500(e):
     return jsonify({"error": "An internal server error occurred"}), 500
 
 
