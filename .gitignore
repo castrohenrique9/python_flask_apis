@@ -295,3 +295,7 @@ tags
 
 # Local generated db
 *.sqlite3
+
+# linters
+.pyproject.toml
+.flake8
