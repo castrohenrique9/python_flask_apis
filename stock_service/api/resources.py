@@ -4,8 +4,9 @@ from flask import request
 from flask_restful import Resource
 
 from stock_service.api.schemas import StockSchema
+from stock_service.config import URL_EXTERNAL_STOCK
 
-import urllib.request, json, datetime, time
+import urllib.request, json, datetime
 
 
 class StockResource(Resource):
@@ -21,7 +22,7 @@ class StockResource(Resource):
         stock_data_obj = None
         schema = StockSchema()
 
-        url = 'https://stooq.com/q/l/?s={}&f=sd2t2ohlcvn&h&e=json'.format(stock_code)
+        url = URL_EXTERNAL_STOCK.format(stock_code)
 
         response = urllib.request.urlopen(url)
         data = response.read()
