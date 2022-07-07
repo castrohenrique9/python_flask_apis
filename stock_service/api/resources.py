@@ -15,17 +15,17 @@ class StockResource(Resource):
     the stooq API.
     """
 
-    def get(self):
+    def get(self, stock_code):
         # TODO: Implement the call to the stooq service here. The stock code to query the API
         # should come in a query parameter.
         stock_data_obj = None
         schema = StockSchema()
 
-        url = 'https://stooq.com/q/l/?s=aapl.us&f=sd2t2ohlcvn&h&e=json'
+        url = 'https://stooq.com/q/l/?s={}&f=sd2t2ohlcvn&h&e=json'.format(stock_code)
 
         response = urllib.request.urlopen(url)
         data = response.read()
-        dict = json.loads(data)
+        stock_data_obj = json.loads(data)
         
         #return schema.dump(stock_data_obj)
-        return dict
+        return stock_data_obj

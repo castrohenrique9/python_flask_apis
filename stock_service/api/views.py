@@ -10,7 +10,7 @@ blueprint = Blueprint("api", __name__, url_prefix="/api/v1")
 api = Api(blueprint)
 
 
-api.add_resource(StockResource, "/stock", endpoint="stock")
+api.add_resource(StockResource, "/stock/<string:stock_code>", endpoint="stock")
 
 
 @blueprint.errorhandler(ValidationError)
