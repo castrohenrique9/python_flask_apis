@@ -14,6 +14,8 @@ from api_service.api.exceptions import (
     ParameterException,
 )
 
+from api_service import models
+
 
 class StockQuery(Resource):
     """
@@ -58,6 +60,8 @@ class StockQuery(Resource):
 
         return StockQuery.extract_content_external_data(json_load)
 
+    
+
     def get(self):
         data_from_service = None
         schema = StockInfoSchema()
@@ -66,6 +70,8 @@ class StockQuery(Resource):
             data_from_service = StockQuery.get_external_data(request.args["q"])
         except BadRequestKeyError:
             raise ParameterException("Invalid parameter")
+        
+        History.save(data_from_service)
 
         return schema.dump(data_from_service)
 
@@ -74,6 +80,10 @@ class History(Resource):
     """
     Returns queries made by current user.
     """
+
+    @classmethod
+    def save(cls, kwargs):
+        print('teste')
 
     def get(self):
         # TODO: Implement this method.
