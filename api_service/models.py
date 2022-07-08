@@ -48,4 +48,7 @@ class History(db.Model):
         self.low = low
         self.close = close
 
+    __mapper_args__ = {
+        "order_by": date.desc()
+    }
     
