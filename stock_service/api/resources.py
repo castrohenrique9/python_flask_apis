@@ -18,7 +18,6 @@ class StockResource(Resource):
     them to our main API service. Currently we only get the data from a single external source:
     the stooq API.
     """
-
     
     @classmethod
     def format_url_external(cls, stock_code: str) -> str:
@@ -39,12 +38,16 @@ class StockResource(Resource):
         except URLError:
             raise GenericException("An error trying request data from external resource")
         
+        return StockResource.extract_content_external_data(json_load)
+    
+    @classmethod
+    def extract_content_external_data(cls, json_load: json):
+        """Check external response data"""
         try:
-            result = json_load["symbols"][0]
+            if json_load["symbols"][0]['name']:
+               return json_load["symbols"][0]
         except KeyError:
             raise DataNotFoundException("Data not found")
-
-        return result
 
     @classmethod
     def convert_date(cls, date: str, format: str = "%Y-%m-%d") -> datetime.date:
