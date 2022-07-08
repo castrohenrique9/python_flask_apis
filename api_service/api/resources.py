@@ -35,6 +35,8 @@ class StockQuery(Resource):
 
         try:
             if json_load["name"]:
+                json_load["company_name"] = json_load["name"]
+                json_load["quote"] = json_load["close"]
                 return json_load
         except KeyError:
             raise DataNotFoundException("Data not found")
