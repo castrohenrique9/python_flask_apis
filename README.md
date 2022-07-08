@@ -77,9 +77,9 @@ The following features are optional to implement, but if you do, you'll be ranke
 ## How to run the project
 * Create a virtualenv: `python -m venv virtualenv` and activate it `. virtualenv/bin/activate`.
 * Install dependencies: `pip install -r requirements.txt`
-* Start the api service: `cd api_service ; flask db migrate; flask db upgrade ; flask run`
-* Set URL_EXTERNAL_STOCK in .flaskenv file with `e=json` and `s={}` param: `URL_EXTERNAL_STOCK=https://stooq.com/q/l/?f=sd2t2ohlcvn&h&e=json&s={}`
-* Start the stock service: `cd stock_service ; flask run`
 
-__Important:__ If your implementation requires different steps to start the services
-(like starting a rabbitMQ consumer), document them here!
+* Set URL_EXTERNAL_STOCK in .flaskenv file with query param `q={}`: `URL_EXTERNAL_STOCK=https://YOUR_STOCK_SERVICE_WITH_FORMAT_PARAM`
+* Start the api service: `cd api_service ; flask db migrate; flask db upgrade ; flask run`
+
+* Set URL_EXTERNAL_STOCK in .flaskenv file with JSON Format (`e=json`) and query param `s={}`: `URL_EXTERNAL_STOCK=https://YOUR_EXTERNAL_API_WITH_FORMAT_PARAM`
+* Start the stock service: `cd stock_service ; flask run`
