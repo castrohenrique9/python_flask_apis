@@ -18,6 +18,6 @@ def register_blueprints(app):
     app.register_blueprint(api.views.blueprint)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = create_app(False)
-    app.run(host='0.0.0.0', port=5001)
+    app.run(host="0.0.0.0", port=5001)

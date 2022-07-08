@@ -7,3 +7,4 @@ import os
 ENV = os.getenv("FLASK_ENV")
 DEBUG = ENV == "development"
 SECRET_KEY = os.getenv("SECRET_KEY")
+URL_EXTERNAL_STOCK = os.getenv("URL_EXTERNAL_STOCK")
