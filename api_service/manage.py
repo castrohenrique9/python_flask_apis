@@ -18,9 +18,21 @@ def init():
     from api_service.models import User
 
     click.echo("create admin user")
-    user = User(username="admin", email="admin@mail.com", password="admin", active=True, role='ADMIN')
+    user = User(
+        username="admin",
+        email="admin@mail.com",
+        password="admin",
+        active=True,
+        role="ADMIN",
+    )
     db.session.add(user)
-    user = User(username="johndoe", email="johndoe@mail.com", password="john", active=True, role='USER')
+    user = User(
+        username="johndoe",
+        email="johndoe@mail.com",
+        password="john",
+        active=True,
+        role="USER",
+    )
     db.session.commit()
     click.echo("created users.")
 
