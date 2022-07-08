@@ -13,3 +13,10 @@ class DataNotFoundException(GenericException):
 
     def __init__(self, message: str):
         super().__init__(message)
+
+
+class ParameterException(GenericException):
+    """Exception when parameter is wrong"""
+
+    def __init__(self, message: str):
+        super().__init__(message)
