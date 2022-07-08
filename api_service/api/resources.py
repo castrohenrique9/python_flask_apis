@@ -34,8 +34,8 @@ class StockQuery(Resource):
         """Check external response data"""
 
         try:
-            if json_load[0]["name"]:
-                return json_load[0]
+            if json_load["name"]:
+                return json_load
         except KeyError:
             raise DataNotFoundException("Data not found")
 
