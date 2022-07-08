@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+
 class GenericException(Exception):
     """Exception to assist in throwing errors"""
 
