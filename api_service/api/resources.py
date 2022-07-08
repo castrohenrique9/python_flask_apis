@@ -1,9 +1,13 @@
+from time import time
+from typing import Generic
 from flask import request
 from flask_restful import Resource
 from werkzeug.exceptions import BadRequestKeyError
 from api_service.api.schemas import StockInfoSchema
 from api_service.extensions import db
 from api_service.config import URL_EXTERNAL_STOCK
+
+from datetime import date, datetime
 
 from urllib.error import URLError
 import urllib.request, json
@@ -80,10 +84,37 @@ class History(Resource):
     """
     Returns queries made by current user.
     """
+    @classmethod
+    def convert_date(cls, date: str, format: str = "%Y-%m-%d") -> datetime.date:
+        """Convert date str to date format"""
 
+        try:
+            return datetime.strptime(date, format)
+        except ValueError:
+            raise GenericException("Error to convert date")
+
+    @classmethod
+    def convert_time(cls, time: str, format: str = "%H:%M:%S") -> datetime.time:
+        """Convert time str to time format"""
+
+        try:
+            return datetime.strptime(time, format).time()
+        except ValueError:
+            raise GenericException("Error to convert date")
+
+    @classmethod
+    def combineDateTime(cls, date: date, time: time):
+        try:
+            return datetime.combine(date, time)
+        except AttributeError:
+            raise GenericException("An error trying combine date and time")
 
     @classmethod
     def save(cls, data):
+        dt = History.convert_date(data["date"])
+        tm = History.convert_time(data["time"])
+        data["date"] = History.combineDateTime(dt, tm)
+
         history = models.History(data)
         history.save()
 
