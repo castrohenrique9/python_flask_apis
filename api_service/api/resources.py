@@ -6,7 +6,7 @@ from api_service.extensions import db
 from api_service.config import URL_EXTERNAL_STOCK
 
 from urllib.error import URLError
-import urllib.request, json, datetime
+import urllib.request, json
 
 from api_service.api.exceptions import (
     DataNotFoundException,
@@ -28,7 +28,7 @@ class StockQuery(Resource):
             raise GenericException(
                 "An internal error trying format URL from external resource"
             )
-    
+
     @classmethod
     def extract_content_external_data(cls, json_load: json):
         """Check external response data"""
@@ -74,6 +74,7 @@ class History(Resource):
     """
     Returns queries made by current user.
     """
+
     def get(self):
         # TODO: Implement this method.
         pass
@@ -83,6 +84,7 @@ class Stats(Resource):
     """
     Allows admin users to see which are the most queried stocks.
     """
+
     def get(self):
         # TODO: Implement this method.
         pass
