@@ -35,7 +35,10 @@ class History(db.Model):
 
     __tablename__ = "history"
 
-    id = db.Column(db.Integer, primary_key=True, )
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
+    )
     date = db.Column(db.DateTime(True), unique=True, nullable=False)
     name = db.Column(db.String(255), nullable=False)
     symbol = db.Column(db.String(20), nullable=False)
@@ -53,15 +56,15 @@ class History(db.Model):
         self.high = high
         self.low = low
         self.close = close
-    
+
     def __init__(self, data):
-        self.date = data['date']
-        self.name = data['name']
-        self.symbol = data['symbol']
-        self.open = data['open']
-        self.high = data['high']
-        self.low = data['low']
-        self.close = data['close']
+        self.date = data["date"]
+        self.name = data["name"]
+        self.symbol = data["symbol"]
+        self.open = data["open"]
+        self.high = data["high"]
+        self.low = data["low"]
+        self.close = data["close"]
 
     def __repr__(self) -> str:
         return jsonify(
@@ -77,7 +80,7 @@ class History(db.Model):
     @classmethod
     def find_by_id(cls, id):
         history = cls.query.filter_by(id=id).first()
-        
+
         if history:
             return history
         else:
