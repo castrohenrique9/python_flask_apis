@@ -78,6 +78,7 @@ The following features are optional to implement, but if you do, you'll be ranke
 * Create a virtualenv: `python -m venv virtualenv` and activate it `. virtualenv/bin/activate`.
 * Install dependencies: `pip install -r requirements.txt`
 * Start the api service: `cd api_service ; flask db migrate; flask db upgrade ; flask run`
+* Set URL_EXTERNAL_STOCK in .flaskenv file with `e=json` and `s={}` param: `URL_EXTERNAL_STOCK=https://stooq.com/q/l/?f=sd2t2ohlcvn&h&e=json&s={}`
 * Start the stock service: `cd stock_service ; flask run`
 
 __Important:__ If your implementation requires different steps to start the services
