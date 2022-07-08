@@ -126,7 +126,6 @@ class History(Resource):
 
     def get(self):
         history = History.find(1)
-        
         schema = HistoryInfoSchema()
         return schema.dump(history)
 

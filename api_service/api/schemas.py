@@ -12,3 +12,8 @@ class StockInfoSchema(ma.Schema):
 class HistoryInfoSchema(ma.Schema):
     date = ma.DateTime(dump_only=True)
     name = ma.String(dump_only=True)
+    symbol = ma.String(dump_only=True)
+    open = ma.Float(dump_only=True)
+    high = ma.Float(dump_only=True)
+    low = ma.Float(dump_only=True)
+    close = ma.Float(dump_only=True)
