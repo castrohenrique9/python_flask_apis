@@ -9,6 +9,8 @@ from flask import jsonify
 class User(db.Model):
     """Basic user model"""
 
+    __tablename__ = "user"
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(80), unique=True, nullable=False)
@@ -42,7 +44,8 @@ class History(db.Model):
     low = db.Column(db.Float(precision=2), nullable=False)
     close = db.Column(db.Float(precision=2), nullable=False)
 
-    def __init__(self, date, name, symbol, open, high, low, close):
+    def __init__(self, id, date, name, symbol, open, high, low, close):
+        self.id = id
         self.date = date
         self.name = name
         self.symbol = symbol
@@ -61,3 +64,7 @@ class History(db.Model):
             low=self.low,
             close=self.close,
         )
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
