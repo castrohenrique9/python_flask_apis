@@ -1,9 +1,9 @@
 from time import time
 from typing import Generic
-from flask import request
+from flask import jsonify, request
 from flask_restful import Resource
 from werkzeug.exceptions import BadRequestKeyError
-from api_service.api.schemas import StockInfoSchema
+from api_service.api.schemas import (StockInfoSchema, HistoryInfoSchema)
 from api_service.extensions import db
 from api_service.config import URL_EXTERNAL_STOCK
 
@@ -84,6 +84,7 @@ class History(Resource):
     """
     Returns queries made by current user.
     """
+
     @classmethod
     def convert_date(cls, date: str, format: str = "%Y-%m-%d") -> datetime.date:
         """Convert date str to date format"""
@@ -118,9 +119,16 @@ class History(Resource):
         history = models.History(data)
         history.save()
 
+    @classmethod
+    def find(cls, user_id):
+        history = models.History.find_by_id(user_id)
+        return history
+
     def get(self):
-        # TODO: Implement this method.
-        pass
+        history = History.find(1)
+        
+        schema = HistoryInfoSchema()
+        return schema.dump(history)
 
 
 class Stats(Resource):

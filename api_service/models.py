@@ -74,6 +74,15 @@ class History(db.Model):
             close=self.close,
         )
 
+    @classmethod
+    def find_by_id(cls, id):
+        history = cls.query.filter_by(id=id).first()
+        
+        if history:
+            return history
+        else:
+            return None
+
     def save(self):
         db.session.add(self)
         db.session.commit()
