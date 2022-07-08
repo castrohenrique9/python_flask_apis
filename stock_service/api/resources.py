@@ -3,13 +3,14 @@
 from urllib.error import URLError
 from flask import request
 from flask_restful import Resource
+from werkzeug.exceptions import BadRequestKeyError
 
 from stock_service.api.schemas import StockSchema
 from stock_service.config import URL_EXTERNAL_STOCK
 
 import urllib.request, json, datetime
 
-from stock_service.exceptions import DataNotFoundException, GenericException
+from stock_service.exceptions import DataNotFoundException, GenericException, ParameterException
 
 
 class StockResource(Resource):
@@ -67,11 +68,14 @@ class StockResource(Resource):
         except ValueError:
             raise GenericException("Error to convert date")
 
-    def get(self, stock_code: str):
+    def get(self):
         stock_data_obj = None
         schema = StockSchema()
 
-        stock_data_obj = StockResource.get_external_data(stock_code)
+        try:
+            stock_data_obj = StockResource.get_external_data(request.args['q'])
+        except BadRequestKeyError:
+            raise ParameterException("Invalid parameter")
         
         stock_data_obj["date"] = StockResource.convert_date(stock_data_obj["date"])
         stock_data_obj["time"] = StockResource.convert_time(stock_data_obj["time"])

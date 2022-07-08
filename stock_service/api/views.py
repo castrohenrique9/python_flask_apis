@@ -7,17 +7,18 @@ from stock_service.api.resources import StockResource
 
 from urllib.error import URLError
 
-from stock_service.exceptions import DataNotFoundException, GenericException
+from stock_service.exceptions import DataNotFoundException, GenericException, ParameterException
 
 
 blueprint = Blueprint("api", __name__, url_prefix="/api/v1")
 api = Api(blueprint)
 
 
-api.add_resource(StockResource, "/stock/<string:stock_code>", endpoint="stock")
+api.add_resource(StockResource, "/stock/", endpoint="stock")
 
 
 @blueprint.errorhandler(ValidationError)
+@blueprint.errorhandler(ParameterException)
 def handle_marshmallow_error(e):
     return jsonify(e.message), 400
 
