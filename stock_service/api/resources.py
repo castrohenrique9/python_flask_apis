@@ -10,7 +10,7 @@ from stock_service.config import URL_EXTERNAL_STOCK
 
 import urllib.request, json, datetime
 
-from stock_service.exceptions import (
+from stock_service.api.exceptions import (
     DataNotFoundException,
     GenericException,
     ParameterException,

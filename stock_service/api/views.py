@@ -7,7 +7,7 @@ from stock_service.api.resources import StockResource
 
 from urllib.error import URLError
 
-from stock_service.exceptions import (
+from stock_service.api.exceptions import (
     DataNotFoundException,
     GenericException,
     ParameterException,
