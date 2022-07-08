@@ -81,9 +81,11 @@ class History(Resource):
     Returns queries made by current user.
     """
 
+
     @classmethod
-    def save(cls, kwargs):
-        print('teste')
+    def save(cls, data):
+        history = models.History(data)
+        history.save()
 
     def get(self):
         # TODO: Implement this method.
