@@ -29,7 +29,6 @@ class StockResource(Resource):
     @classmethod
     def get_external_data(cls, stock_code):
         """Request data from external service with URL default"""
-        result: json
 
         try:
             response = urllib.request.urlopen(StockResource.format_url_external(stock_code))
@@ -43,6 +42,7 @@ class StockResource(Resource):
     @classmethod
     def extract_content_external_data(cls, json_load: json):
         """Check external response data"""
+        
         try:
             if json_load["symbols"][0]['name']:
                return json_load["symbols"][0]
