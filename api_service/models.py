@@ -24,3 +24,28 @@ class User(db.Model):
 
     def __repr__(self):
         return "<User %s>" % self.username
+
+
+class History(db.Model):
+    """History model"""
+    __tablename__ = "history"
+
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date(), unique=True, nullable=False)
+    name = db.Column(db.String(255), nullable=False)
+    symbol = db.Column(db.String(20), nullable=False)
+    open = db.Column(db.Float(precision=2), nullable=False)
+    high = db.Column(db.Float(precision=2), nullable=False)
+    low = db.Column(db.Float(precision=2), nullable=False)
+    close = db.Column(db.Float(precision=2), nullable=False)
+
+    def __init__(self, date, name, symbol, open, high, low, close):
+        self.date = date
+        self.name = name
+        self.symbol = symbol
+        self.open = open
+        self.high = high
+        self.low = low
+        self.close = close
+
+    
