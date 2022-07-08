@@ -18,6 +18,16 @@ class User(db.Model):
     active = db.Column(db.Boolean, default=True)
     role = db.Column(db.String(20), nullable=False)
 
+    @classmethod
+    def find_by_username(cls, username: str):
+        user = cls.query.filter_by(username=username).first()
+        return user if user else None
+
+    @classmethod
+    def find_by_id(cls, id: str):
+        user = cls.query.filter_by(id=id).first()
+        return user if user else None
+
     @hybrid_property
     def password(self):
         return self._password
@@ -80,11 +90,7 @@ class History(db.Model):
     @classmethod
     def find_by_id(cls, id):
         history = cls.query.filter_by(id=id).first()
-
-        if history:
-            return history
-        else:
-            return None
+        return history if history else None
 
     def save(self):
         db.session.add(self)
