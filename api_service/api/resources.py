@@ -3,6 +3,7 @@ from flask_restful import Resource
 from werkzeug.exceptions import BadRequestKeyError
 from api_service.api.schemas import StockInfoSchema
 from api_service.extensions import db
+from api_service.config import URL_EXTERNAL_STOCK
 
 from urllib.error import URLError
 import urllib.request, json, datetime
