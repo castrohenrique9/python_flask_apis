@@ -14,3 +14,4 @@ pytest-flask==1.2.0
 pytest-runner==6.0.0
 pytest-factoryboy==2.5.0
 flask-jwt-extended==4.4.2
+Werkzeug==2.0.3

@@ -11,12 +11,13 @@ from api_service.api.exceptions import (
     DataNotFoundException,
     GenericException,
     ParameterException,
+    UnauthorizedException,
 )
 
 blueprint = Blueprint("api", __name__, url_prefix="/api/v1")
 api = Api(blueprint)
 
-
+api.add_resource(resources.UserLogin, "/login", endpoint="login")
 api.add_resource(resources.StockQuery, "/stock", endpoint="stock")
 api.add_resource(resources.History, "/history", endpoint="history")
 api.add_resource(resources.Stats, "/stats", endpoint="stats")
@@ -27,6 +28,9 @@ api.add_resource(resources.Stats, "/stats", endpoint="stats")
 def handle_marshmallow_error(e):
     return jsonify(e.message), 400
 
+@blueprint.errorhandler(UnauthorizedException)
+def handle_error_401(e):
+    return jsonify(e.message), 401
 
 @blueprint.errorhandler(URLError)
 @blueprint.errorhandler(AttributeError)

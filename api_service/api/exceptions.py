@@ -21,3 +21,10 @@ class ParameterException(GenericException):
 
     def __init__(self, message: str):
         super().__init__(message)
+
+
+class UnauthorizedException(GenericException):
+    """Exception when do not have permission"""
+
+    def __init__(self, message: str):
+        super().__init__(message)
