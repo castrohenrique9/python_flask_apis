@@ -158,6 +158,11 @@ class Stats(Resource):
 
 
 class UserLogin(Resource):
+
+    @classmethod
+    def get_is_admin(cls, user_id):
+        return True if models.User.find_by_id_admin(user_id) else False
+
     @classmethod
     def post(cls):
 
