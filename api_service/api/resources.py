@@ -6,7 +6,9 @@ from flask_restful import Resource, reqparse
 from werkzeug.exceptions import BadRequestKeyError
 from api_service.api.schemas import StockInfoSchema, HistoryInfoSchema
 from api_service.config import URL_EXTERNAL_STOCK
+
 from api_service.auth import security
+from flask_jwt_extended import jwt_required
 
 from datetime import date, datetime
 
@@ -68,6 +70,7 @@ class StockQuery(Resource):
 
         return StockQuery.extract_content_external_data(json_load)
 
+    @jwt_required()
     def get(self):
         data_from_service = None
         schema = StockInfoSchema()
@@ -126,6 +129,7 @@ class History(Resource):
         history = models.History.find_by_id(user_id)
         return history
 
+    @jwt_required()
     def get(self):
         history = History.find(1)
         schema = HistoryInfoSchema()
