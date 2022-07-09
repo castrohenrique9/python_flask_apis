@@ -21,8 +21,6 @@ class User(db.Model):
     active = db.Column(db.Boolean, default=True)
     role = db.Column(db.String(20), nullable=False)
 
-    
-
     @classmethod
     def find_by_username(cls, username: str):
         user = cls.query.filter_by(username=username).first()
@@ -96,14 +94,21 @@ class History(db.Model):
 
     @classmethod
     def find_all_by_user_id(cls, user_id):
-        history = cls.query.filter_by(user_id=user_id).order_by(History.date.desc()).all()
+        history = (
+            cls.query.filter_by(user_id=user_id).order_by(History.date.desc()).all()
+        )
         return history if history else None
 
     @classmethod
     def find_stats(cls):
         stock = History.symbol.label("stock")
         times_requested = db.func.count(History.symbol).label("times_requested")
-        return db.session.query(stock, times_requested).group_by(History.symbol).order_by(times_requested.desc()).limit(ROW_LIMIT_DEFAULT)
+        return (
+            db.session.query(stock, times_requested)
+            .group_by(History.symbol)
+            .order_by(times_requested.desc())
+            .limit(ROW_LIMIT_DEFAULT)
+        )
 
     def save(self):
         db.session.add(self)

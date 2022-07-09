@@ -7,11 +7,11 @@ from flask_restful import Resource, reqparse
 
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import BadRequestKeyError
-from api_service.api.schemas import (StockInfoSchema, HistoryInfoSchema, StatsInfoSchema)
+from api_service.api.schemas import StockInfoSchema, HistoryInfoSchema, StatsInfoSchema
 from api_service.config import URL_EXTERNAL_STOCK
 
 from api_service.auth import security
-from flask_jwt_extended import (jwt_required, get_jwt_identity)
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
 from datetime import date, datetime
@@ -157,6 +157,7 @@ class Stats(Resource):
     """
     Allows admin users to see which are the most queried stocks.
     """
+
     @jwt_required()
     def get(self):
         if UserLogin.is_admin(get_jwt_identity()):
@@ -167,11 +168,9 @@ class Stats(Resource):
             return listing, 200
         else:
             raise UnauthorizedException("You are not an administrator")
-        
 
 
 class UserLogin(Resource):
-
     @classmethod
     def is_admin(cls, user_id):
         return True if models.User.find_by_id_admin(user_id) else False

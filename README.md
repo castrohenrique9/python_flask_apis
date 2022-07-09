@@ -81,6 +81,7 @@ The following features are optional to implement, but if you do, you'll be ranke
 * Set .flaskenv file for `api_service`:
   * `URL_EXTERNAL_STOCK` with query param `q={}`: `URL_EXTERNAL_STOCK=https://YOUR_STOCK_SERVICE_WITH_FORMAT_PARAM`
   * `SECRET_KEY` with your secret key
+  * `QUERY_ROW_LIMIT_DEFAULT` with int. This value is used to limit the amount of records in `/stats`. Default value is 5.
 * Start the api service: `cd api_service ; flask db migrate; flask db upgrade ; flask run`
 
 * Set .flaskenv file for `stock_service`:
