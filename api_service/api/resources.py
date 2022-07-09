@@ -13,6 +13,7 @@ from api_service.config import URL_EXTERNAL_STOCK
 from api_service.auth import security
 from flask_jwt_extended import (jwt_required, get_jwt_identity)
 
+
 from datetime import date, datetime
 
 from urllib.error import URLError
@@ -22,6 +23,7 @@ from api_service.api.exceptions import (
     DataNotFoundException,
     GenericException,
     ParameterException,
+    UnauthorizedException,
 )
 
 from api_service import models
@@ -151,16 +153,19 @@ class Stats(Resource):
     """
     Allows admin users to see which are the most queried stocks.
     """
-
+    @jwt_required()
     def get(self):
-        # TODO: Implement this method.
-        pass
+        if UserLogin.is_admin(get_jwt_identity()):
+            pass
+        else:
+            raise UnauthorizedException("You are not an administrator")
+        
 
 
 class UserLogin(Resource):
 
     @classmethod
-    def get_is_admin(cls, user_id):
+    def is_admin(cls, user_id):
         return True if models.User.find_by_id_admin(user_id) else False
 
     @classmethod

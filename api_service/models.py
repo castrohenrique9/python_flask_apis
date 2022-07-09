@@ -33,8 +33,8 @@ class User(db.Model):
 
     @classmethod
     def find_by_id_admin(cls, id: int):
-        user = User.find_by_id(id=id).first()
-        return user if user.role == "ADMIN" else None
+        user = cls.query.filter_by(id=id, role="ADMIN").first()
+        return user if user else None
 
     @hybrid_property
     def password(self):
