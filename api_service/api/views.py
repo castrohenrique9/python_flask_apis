@@ -28,9 +28,11 @@ api.add_resource(resources.Stats, "/stats", endpoint="stats")
 def handle_marshmallow_error(e):
     return jsonify(e.message), 400
 
+
 @blueprint.errorhandler(UnauthorizedException)
 def handle_error_401(e):
     return jsonify(e.message), 401
+
 
 @blueprint.errorhandler(URLError)
 @blueprint.errorhandler(AttributeError)

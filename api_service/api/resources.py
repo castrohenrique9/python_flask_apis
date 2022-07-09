@@ -4,7 +4,7 @@ from time import time
 from flask import request
 from flask_restful import Resource, reqparse
 from werkzeug.exceptions import BadRequestKeyError
-from api_service.api.schemas import (StockInfoSchema, HistoryInfoSchema)
+from api_service.api.schemas import StockInfoSchema, HistoryInfoSchema
 from api_service.config import URL_EXTERNAL_STOCK
 from api_service.auth import security
 
@@ -76,7 +76,7 @@ class StockQuery(Resource):
             data_from_service = StockQuery.get_external_data(request.args["q"])
         except BadRequestKeyError:
             raise ParameterException("Invalid parameter")
-        
+
         History.save(data_from_service)
 
         return schema.dump(data_from_service)
@@ -143,10 +143,9 @@ class Stats(Resource):
 
 
 class UserLogin(Resource):
-
     @classmethod
     def post(cls):
-        
+
         attributes.add_argument(
             "username",
             type=str,
@@ -161,4 +160,4 @@ class UserLogin(Resource):
         )
 
         dados = attributes.parse_args()
-        return security.authenticate(dados['username'], dados['password']), 200
+        return security.authenticate(dados["username"], dados["password"]), 200
