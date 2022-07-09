@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import ForeignKey
 from api_service.extensions import db, pwd_context
 
 from flask import jsonify
@@ -17,6 +18,8 @@ class User(db.Model):
     _password = db.Column("password", db.String(255), nullable=False)
     active = db.Column(db.Boolean, default=True)
     role = db.Column(db.String(20), nullable=False)
+
+    
 
     @classmethod
     def find_by_username(cls, username: str):
@@ -56,18 +59,9 @@ class History(db.Model):
     high = db.Column(db.Float(precision=2), nullable=False)
     low = db.Column(db.Float(precision=2), nullable=False)
     close = db.Column(db.Float(precision=2), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
-    def __init__(self, id, date, name, symbol, open, high, low, close):
-        self.id = id
-        self.date = date
-        self.name = name
-        self.symbol = symbol
-        self.open = open
-        self.high = high
-        self.low = low
-        self.close = close
-
-    def __init__(self, data):
+    def __init__(self, user_id, data):
         self.date = data["date"]
         self.name = data["name"]
         self.symbol = data["symbol"]
@@ -75,6 +69,7 @@ class History(db.Model):
         self.high = data["high"]
         self.low = data["low"]
         self.close = data["close"]
+        self.user_id = user_id
 
     def __repr__(self) -> str:
         return jsonify(
@@ -90,6 +85,11 @@ class History(db.Model):
     @classmethod
     def find_by_id(cls, id):
         history = cls.query.filter_by(id=id).first()
+        return history if history else None
+
+    @classmethod
+    def find_by_user_id(cls, id):
+        history = cls.query.filter_by(user_id=id).first()
         return history if history else None
 
     def save(self):
