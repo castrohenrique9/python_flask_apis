@@ -2,7 +2,9 @@
 
 from os import times_result
 from sqlalchemy.ext.hybrid import hybrid_property
+from api_service.config import ROW_LIMIT_DEFAULT
 from api_service.extensions import db, pwd_context
+
 
 from flask import jsonify
 
@@ -101,7 +103,7 @@ class History(db.Model):
     def find_stats(cls):
         stock = History.symbol.label("stock")
         times_requested = db.func.count(History.symbol).label("times_requested")
-        return db.session.query(stock, times_requested).group_by(History.symbol).order_by(times_requested.desc()).limit(5)
+        return db.session.query(stock, times_requested).group_by(History.symbol).order_by(times_requested.desc()).limit(ROW_LIMIT_DEFAULT)
 
     def save(self):
         db.session.add(self)
