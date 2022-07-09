@@ -40,12 +40,12 @@ def handle_error_401(e):
 @blueprint.errorhandler(NoAuthorizationError)
 @blueprint.errorhandler(InvalidSignatureError)
 def handle_error_401(e):
-    return jsonify({"error": "No authorization"}), 401
+    return jsonify({"message": "No authorization"}), 401
 
 
 @blueprint.errorhandler(ExpiredSignatureError)
 def handle_error_401(e):
-    return jsonify({"error": "Login expired"}), 401
+    return jsonify({"message": "Login expired"}), 401
 
 
 @blueprint.errorhandler(URLError)
@@ -58,4 +58,4 @@ def handle_error_404(e):
 
 @blueprint.errorhandler(Exception)
 def handle_error_500(e):
-    return jsonify({"error": "An internal server error occurred"}), 500
+    return jsonify({"message": "An internal server error occurred"}), 500
