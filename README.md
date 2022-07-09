@@ -78,8 +78,11 @@ The following features are optional to implement, but if you do, you'll be ranke
 * Create a virtualenv: `python -m venv virtualenv` and activate it `. virtualenv/bin/activate`.
 * Install dependencies: `pip install -r requirements.txt`
 
-* Set URL_EXTERNAL_STOCK in .flaskenv file with query param `q={}`: `URL_EXTERNAL_STOCK=https://YOUR_STOCK_SERVICE_WITH_FORMAT_PARAM`
+* Set .flaskenv file for `api_service`:
+  * `URL_EXTERNAL_STOCK` with query param `q={}`: `URL_EXTERNAL_STOCK=https://YOUR_STOCK_SERVICE_WITH_FORMAT_PARAM`
+  * `SECRET_KEY` with your secret key
 * Start the api service: `cd api_service ; flask db migrate; flask db upgrade ; flask run`
 
-* Set URL_EXTERNAL_STOCK in .flaskenv file with JSON Format (`e=json`) and query param `s={}`: `URL_EXTERNAL_STOCK=https://YOUR_EXTERNAL_API_WITH_FORMAT_PARAM`
+* Set .flaskenv file for `stock_service`:
+  * `URL_EXTERNAL_STOCK` with JSON Format (`e=json`) and query param `s={}`. Exemple: `URL_EXTERNAL_STOCK=https://stooq.com/q/l/?f=sd2t2ohlcvn&h&e=json&s={}`
 * Start the stock service: `cd stock_service ; flask run`

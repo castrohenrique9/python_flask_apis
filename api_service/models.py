@@ -18,6 +18,16 @@ class User(db.Model):
     active = db.Column(db.Boolean, default=True)
     role = db.Column(db.String(20), nullable=False)
 
+    @classmethod
+    def find_by_username(cls, username: str):
+        user = cls.query.filter_by(username=username).first()
+        return user if user else None
+
+    @classmethod
+    def find_by_id(cls, id: int):
+        user = cls.query.filter_by(id=id).first()
+        return user if user else None
+
     @hybrid_property
     def password(self):
         return self._password
@@ -35,7 +45,10 @@ class History(db.Model):
 
     __tablename__ = "history"
 
-    id = db.Column(db.Integer, primary_key=True, )
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
+    )
     date = db.Column(db.DateTime(True), unique=True, nullable=False)
     name = db.Column(db.String(255), nullable=False)
     symbol = db.Column(db.String(20), nullable=False)
@@ -53,15 +66,15 @@ class History(db.Model):
         self.high = high
         self.low = low
         self.close = close
-    
+
     def __init__(self, data):
-        self.date = data['date']
-        self.name = data['name']
-        self.symbol = data['symbol']
-        self.open = data['open']
-        self.high = data['high']
-        self.low = data['low']
-        self.close = data['close']
+        self.date = data["date"]
+        self.name = data["name"]
+        self.symbol = data["symbol"]
+        self.open = data["open"]
+        self.high = data["high"]
+        self.low = data["low"]
+        self.close = data["close"]
 
     def __repr__(self) -> str:
         return jsonify(
@@ -73,6 +86,11 @@ class History(db.Model):
             low=self.low,
             close=self.close,
         )
+
+    @classmethod
+    def find_by_id(cls, id):
+        history = cls.query.filter_by(id=id).first()
+        return history if history else None
 
     def save(self):
         db.session.add(self)

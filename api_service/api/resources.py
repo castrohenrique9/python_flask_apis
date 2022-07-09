@@ -1,11 +1,16 @@
+# encoding: utf-8
+
+from sqlite3 import IntegrityError
 from time import time
-from typing import Generic
 from flask import request
-from flask_restful import Resource
+from flask_restful import Resource, reqparse
+from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import BadRequestKeyError
-from api_service.api.schemas import StockInfoSchema
-from api_service.extensions import db
+from api_service.api.schemas import StockInfoSchema, HistoryInfoSchema
 from api_service.config import URL_EXTERNAL_STOCK
+
+from api_service.auth import security
+from flask_jwt_extended import jwt_required
 
 from datetime import date, datetime
 
@@ -19,6 +24,9 @@ from api_service.api.exceptions import (
 )
 
 from api_service import models
+
+
+attributes = reqparse.RequestParser()
 
 
 class StockQuery(Resource):
@@ -64,8 +72,7 @@ class StockQuery(Resource):
 
         return StockQuery.extract_content_external_data(json_load)
 
-    
-
+    @jwt_required()
     def get(self):
         data_from_service = None
         schema = StockInfoSchema()
@@ -74,8 +81,11 @@ class StockQuery(Resource):
             data_from_service = StockQuery.get_external_data(request.args["q"])
         except BadRequestKeyError:
             raise ParameterException("Invalid parameter")
-        
-        History.save(data_from_service)
+
+        try:
+            History.save(data_from_service)
+        except IntegrityError:
+            pass
 
         return schema.dump(data_from_service)
 
@@ -84,6 +94,7 @@ class History(Resource):
     """
     Returns queries made by current user.
     """
+
     @classmethod
     def convert_date(cls, date: str, format: str = "%Y-%m-%d") -> datetime.date:
         """Convert date str to date format"""
@@ -118,9 +129,16 @@ class History(Resource):
         history = models.History(data)
         history.save()
 
+    @classmethod
+    def find(cls, user_id):
+        history = models.History.find_by_id(user_id)
+        return history
+
+    @jwt_required()
     def get(self):
-        # TODO: Implement this method.
-        pass
+        history = History.find(1)
+        schema = HistoryInfoSchema()
+        return schema.dump(history)
 
 
 class Stats(Resource):
@@ -131,3 +149,24 @@ class Stats(Resource):
     def get(self):
         # TODO: Implement this method.
         pass
+
+
+class UserLogin(Resource):
+    @classmethod
+    def post(cls):
+
+        attributes.add_argument(
+            "username",
+            type=str,
+            required=True,
+            help="The field 'username' can not be left blank",
+        )
+        attributes.add_argument(
+            "password",
+            type=str,
+            required=True,
+            help="The field 'password' can not be left blank",
+        )
+
+        dados = attributes.parse_args()
+        return security.authenticate(dados["username"], dados["password"]), 200
