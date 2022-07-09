@@ -4,13 +4,14 @@ from sqlite3 import IntegrityError
 from time import time
 from flask import request
 from flask_restful import Resource, reqparse
+
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import BadRequestKeyError
 from api_service.api.schemas import StockInfoSchema, HistoryInfoSchema
 from api_service.config import URL_EXTERNAL_STOCK
 
 from api_service.auth import security
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import (jwt_required, get_jwt_identity)
 
 from datetime import date, datetime
 
@@ -83,7 +84,7 @@ class StockQuery(Resource):
             raise ParameterException("Invalid parameter")
 
         try:
-            History.save(data_from_service)
+            History.save(get_jwt_identity(), data_from_service)
         except IntegrityError:
             pass
 
@@ -121,10 +122,11 @@ class History(Resource):
             raise GenericException("An error trying combine date and time")
 
     @classmethod
-    def save(cls, data):
+    def save(cls, user_id, data):
         dt = History.convert_date(data["date"])
         tm = History.convert_time(data["time"])
         data["date"] = History.combineDateTime(dt, tm)
+        data["user_id"] = user_id
 
         history = models.History(data)
         history.save()
