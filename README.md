@@ -85,5 +85,6 @@ The following features are optional to implement, but if you do, you'll be ranke
 * Start the api service: `cd api_service ; flask db migrate; flask db upgrade ; flask run`
 
 * Set .flaskenv file for `stock_service`:
+  * `SECRET_KEY` with your secret key
   * `URL_EXTERNAL_STOCK` with JSON Format (`e=json`) and query param `s={}`. Exemple: `URL_EXTERNAL_STOCK=https://stooq.com/q/l/?f=sd2t2ohlcvn&h&e=json&s={}`
 * Start the stock service: `cd stock_service ; flask run`
