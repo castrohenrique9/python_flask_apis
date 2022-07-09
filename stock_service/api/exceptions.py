@@ -5,7 +5,7 @@ class GenericException(Exception):
     """Exception to assist in throwing errors"""
 
     def __init__(self, message: str):
-        self.message = {"error": message}
+        self.message = {"message": message}
         super().__init__(self.message)
 
 
