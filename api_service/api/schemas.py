@@ -17,3 +17,8 @@ class HistoryInfoSchema(ma.Schema):
     high = ma.Float(dump_only=True)
     low = ma.Float(dump_only=True)
     close = ma.Float(dump_only=True)
+
+
+class StatsInfoSchema(ma.Schema):
+    stock = ma.String(dump_only=True)
+    times_requested = ma.Integer(dump_only=True)

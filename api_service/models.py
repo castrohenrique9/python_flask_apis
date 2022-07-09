@@ -1,7 +1,6 @@
 # encoding: utf-8
 
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy import ForeignKey
 from api_service.extensions import db, pwd_context
 
 from flask import jsonify
@@ -96,6 +95,11 @@ class History(db.Model):
     def find_all_by_user_id(cls, user_id):
         history = cls.query.filter_by(user_id=user_id).order_by(History.date.desc()).all()
         return history if history else None
+
+    @classmethod
+    def find_stats(cls):
+        stock = History.symbol.label("stock")
+        return db.session.query(stock, db.func.count(History.symbol).label("times_requested")).group_by(History.symbol).all()
 
     def save(self):
         db.session.add(self)

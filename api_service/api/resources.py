@@ -2,12 +2,12 @@
 
 from sqlite3 import IntegrityError
 from time import time
-from flask import request
+from flask import request, jsonify
 from flask_restful import Resource, reqparse
 
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import BadRequestKeyError
-from api_service.api.schemas import StockInfoSchema, HistoryInfoSchema
+from api_service.api.schemas import (StockInfoSchema, HistoryInfoSchema, StatsInfoSchema)
 from api_service.config import URL_EXTERNAL_STOCK
 
 from api_service.auth import security
@@ -141,6 +141,10 @@ class History(Resource):
     def find_all_by_user_id(cls, user_id):
         return models.History.find_all_by_user_id(user_id)
 
+    @classmethod
+    def find_stats(cls):
+        return models.History.find_stats()
+
     @jwt_required()
     def get(self):
         histories = History.find_all_by_user_id(get_jwt_identity())
@@ -156,7 +160,11 @@ class Stats(Resource):
     @jwt_required()
     def get(self):
         if UserLogin.is_admin(get_jwt_identity()):
-            pass
+            stats = models.History.find_stats()
+
+            schema = StatsInfoSchema()
+            listing = [schema.dump(s) for s in stats]
+            return listing, 200
         else:
             raise UnauthorizedException("You are not an administrator")
         
