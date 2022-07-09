@@ -61,7 +61,7 @@ class History(db.Model):
     close = db.Column(db.Float(precision=2), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
-    def __init__(self, user_id, data):
+    def __init__(self, data):
         self.date = data["date"]
         self.name = data["name"]
         self.symbol = data["symbol"]
@@ -69,7 +69,7 @@ class History(db.Model):
         self.high = data["high"]
         self.low = data["low"]
         self.close = data["close"]
-        self.user_id = user_id
+        self.user_id = data["user_id"]
 
     def __repr__(self) -> str:
         return jsonify(

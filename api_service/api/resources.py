@@ -126,8 +126,9 @@ class History(Resource):
         dt = History.convert_date(data["date"])
         tm = History.convert_time(data["time"])
         data["date"] = History.combineDateTime(dt, tm)
+        data["user_id"] = user_id
 
-        history = models.History(user_id, data)
+        history = models.History(data)
         history.save()
 
     @classmethod
