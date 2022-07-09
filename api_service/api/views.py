@@ -5,6 +5,7 @@ from flask_restful import Api
 from marshmallow import ValidationError
 from api_service.api import resources
 
+from flask_jwt_extended.exceptions import NoAuthorizationError
 from urllib.error import URLError
 
 from api_service.api.exceptions import (
@@ -28,11 +29,13 @@ api.add_resource(resources.Stats, "/stats", endpoint="stats")
 def handle_marshmallow_error(e):
     return jsonify(e.message), 400
 
-
 @blueprint.errorhandler(UnauthorizedException)
 def handle_error_401(e):
     return jsonify(e.message), 401
 
+@blueprint.errorhandler(NoAuthorizationError)
+def handle_error_401(e):
+    return jsonify({"error": "No authorization"}), 401
 
 @blueprint.errorhandler(URLError)
 @blueprint.errorhandler(AttributeError)
