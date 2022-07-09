@@ -5,7 +5,8 @@ from flask_restful import Api
 from marshmallow import ValidationError
 from api_service.api import resources
 
-from flask_jwt_extended.exceptions import NoAuthorizationError
+from flask_jwt_extended.exceptions import NoAuthorizationError #, ExpiredSignatureError
+from jwt.exceptions import ExpiredSignatureError
 from urllib.error import URLError
 
 from api_service.api.exceptions import (
@@ -36,6 +37,10 @@ def handle_error_401(e):
 @blueprint.errorhandler(NoAuthorizationError)
 def handle_error_401(e):
     return jsonify({"error": "No authorization"}), 401
+
+@blueprint.errorhandler(ExpiredSignatureError)
+def handle_error_401(e):
+    return jsonify({"error": "Login expired"}), 401
 
 @blueprint.errorhandler(URLError)
 @blueprint.errorhandler(AttributeError)
