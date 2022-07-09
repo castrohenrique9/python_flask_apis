@@ -2,16 +2,17 @@
 
 from sqlite3 import IntegrityError
 from time import time
-from flask import request
+from flask import request, jsonify
 from flask_restful import Resource, reqparse
 
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import BadRequestKeyError
-from api_service.api.schemas import StockInfoSchema, HistoryInfoSchema
+from api_service.api.schemas import StockInfoSchema, HistoryInfoSchema, StatsInfoSchema
 from api_service.config import URL_EXTERNAL_STOCK
 
 from api_service.auth import security
-from flask_jwt_extended import (jwt_required, get_jwt_identity)
+from flask_jwt_extended import jwt_required, get_jwt_identity
+
 
 from datetime import date, datetime
 
@@ -22,6 +23,7 @@ from api_service.api.exceptions import (
     DataNotFoundException,
     GenericException,
     ParameterException,
+    UnauthorizedException,
 )
 
 from api_service import models
@@ -139,6 +141,10 @@ class History(Resource):
     def find_all_by_user_id(cls, user_id):
         return models.History.find_all_by_user_id(user_id)
 
+    @classmethod
+    def find_stats(cls):
+        return models.History.find_stats()
+
     @jwt_required()
     def get(self):
         histories = History.find_all_by_user_id(get_jwt_identity())
@@ -152,12 +158,23 @@ class Stats(Resource):
     Allows admin users to see which are the most queried stocks.
     """
 
+    @jwt_required()
     def get(self):
-        # TODO: Implement this method.
-        pass
+        if UserLogin.is_admin(get_jwt_identity()):
+            stats = models.History.find_stats()
+
+            schema = StatsInfoSchema()
+            listing = [schema.dump(s) for s in stats]
+            return listing, 200
+        else:
+            raise UnauthorizedException("You are not an administrator")
 
 
 class UserLogin(Resource):
+    @classmethod
+    def is_admin(cls, user_id):
+        return True if models.User.find_by_id_admin(user_id) else False
+
     @classmethod
     def post(cls):
 

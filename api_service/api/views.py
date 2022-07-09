@@ -2,6 +2,7 @@
 
 from flask import Blueprint, current_app, jsonify
 from flask_restful import Api
+
 from marshmallow import ValidationError
 from api_service.api import resources
 
@@ -30,18 +31,22 @@ api.add_resource(resources.Stats, "/stats", endpoint="stats")
 def handle_marshmallow_error(e):
     return jsonify(e.message), 400
 
+
 @blueprint.errorhandler(UnauthorizedException)
 def handle_error_401(e):
     return jsonify(e.message), 401
+
 
 @blueprint.errorhandler(NoAuthorizationError)
 @blueprint.errorhandler(InvalidSignatureError)
 def handle_error_401(e):
     return jsonify({"error": "No authorization"}), 401
 
+
 @blueprint.errorhandler(ExpiredSignatureError)
 def handle_error_401(e):
     return jsonify({"error": "Login expired"}), 401
+
 
 @blueprint.errorhandler(URLError)
 @blueprint.errorhandler(AttributeError)
