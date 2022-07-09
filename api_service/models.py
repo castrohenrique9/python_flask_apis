@@ -2,7 +2,7 @@
 
 from os import times_result
 from sqlalchemy.ext.hybrid import hybrid_property
-from api_service.config import ROW_LIMIT_DEFAULT
+from api_service.config import QUERY_ROW_LIMIT_DEFAULT
 from api_service.extensions import db, pwd_context
 
 
@@ -107,7 +107,7 @@ class History(db.Model):
             db.session.query(stock, times_requested)
             .group_by(History.symbol)
             .order_by(times_requested.desc())
-            .limit(ROW_LIMIT_DEFAULT)
+            .limit(QUERY_ROW_LIMIT_DEFAULT)
         )
 
     def save(self):
