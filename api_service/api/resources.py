@@ -1,11 +1,12 @@
+# encoding: utf-8
+
 from time import time
-from typing import Generic
-from flask import jsonify, request
-from flask_restful import Resource
+from flask import request
+from flask_restful import Resource, reqparse
 from werkzeug.exceptions import BadRequestKeyError
 from api_service.api.schemas import (StockInfoSchema, HistoryInfoSchema)
-from api_service.extensions import db
 from api_service.config import URL_EXTERNAL_STOCK
+from api_service.auth import security
 
 from datetime import date, datetime
 
@@ -19,6 +20,9 @@ from api_service.api.exceptions import (
 )
 
 from api_service import models
+
+
+attributes = reqparse.RequestParser()
 
 
 class StockQuery(Resource):
@@ -63,8 +67,6 @@ class StockQuery(Resource):
             )
 
         return StockQuery.extract_content_external_data(json_load)
-
-    
 
     def get(self):
         data_from_service = None
@@ -138,3 +140,25 @@ class Stats(Resource):
     def get(self):
         # TODO: Implement this method.
         pass
+
+
+class UserLogin(Resource):
+
+    @classmethod
+    def post(cls):
+        
+        attributes.add_argument(
+            "username",
+            type=str,
+            required=True,
+            help="The field 'username' can not be left blank",
+        )
+        attributes.add_argument(
+            "password",
+            type=str,
+            required=True,
+            help="The field 'password' can not be left blank",
+        )
+
+        dados = attributes.parse_args()
+        return security.authenticate(dados['username'], dados['password']), 200

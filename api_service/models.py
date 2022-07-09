@@ -24,7 +24,7 @@ class User(db.Model):
         return user if user else None
 
     @classmethod
-    def find_by_id(cls, id: str):
+    def find_by_id(cls, id: int):
         user = cls.query.filter_by(id=id).first()
         return user if user else None
 
