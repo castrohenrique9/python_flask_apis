@@ -132,13 +132,16 @@ class History(Resource):
         history.save()
 
     @classmethod
-    def find(cls, user_id):
-        history = models.History.find_by_id(user_id)
-        return history
+    def find_by_id(cls, id):
+        return models.History.find_by_id(id)
+
+    @classmethod
+    def find_by_user_id(cls, user_id):
+        return models.History.find_by_user_id(user_id)
 
     @jwt_required()
     def get(self):
-        history = History.find(1)
+        history = History.find_by_user_id(get_jwt_identity())
         schema = HistoryInfoSchema()
         return schema.dump(history)
 

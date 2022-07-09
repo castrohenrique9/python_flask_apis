@@ -88,8 +88,8 @@ class History(db.Model):
         return history if history else None
 
     @classmethod
-    def find_by_user_id(cls, id):
-        history = cls.query.filter_by(user_id=id).first()
+    def find_by_user_id(cls, user_id):
+        history = cls.query.filter_by(user_id=user_id).all()
         return history if history else None
 
     def save(self):
