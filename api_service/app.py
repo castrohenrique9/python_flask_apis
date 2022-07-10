@@ -60,7 +60,7 @@ def create_rabbitmq_channel_listen():
     
     thread = Thread(target=rabbitmq_channel_listen.start_consuming)
     thread.start()
-    print("Waiting for messages in background tag_api")
+    print("Waiting for RabbitMQ messages in background")
 
     return rabbitmq_channel_listen
 

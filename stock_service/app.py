@@ -33,7 +33,8 @@ def register_blueprints(app):
 
 def callback(ch, method, properties, body):
     data = json.loads(body)
-    StockResource.get_stock_data(data["user_id"], data["stock_code"])
+    from stock_service.api import queues as rabbit
+    rabbit.get_stock_data_queue(data["user_id"], data["stock_code"])
 
 
 def create_rabbitmq_channel_listen():
@@ -46,7 +47,7 @@ def create_rabbitmq_channel_listen():
     
     thread = Thread(target=rabbitmq_channel_listen.start_consuming)
     thread.start()
-    print("Waiting for messages in background")
+    print("Waiting for RabbitMQ messages in background")
 
     return rabbitmq_channel_listen
 
