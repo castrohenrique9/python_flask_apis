@@ -52,7 +52,7 @@ def callback(ch, method, properties, body):
 
 def create_rabbitmq_channel_listen():
     rabbitmq_channel_listen = rabbitmq_connection.channel()
-    #rabbitmq_channel_listen.exchange_declare(exchange=RABBITMQ_EXCHANGE, exchange_type=RABBITMQ_EXCHANGE_TYPE)
+    rabbitmq_channel_listen.exchange_declare(exchange=RABBITMQ_EXCHANGE, exchange_type=RABBITMQ_EXCHANGE_TYPE)
     rabbitmq_channel_listen.queue_declare(queue=RABBITMQ_QUEUE_API)
     rabbitmq_channel_listen.queue_bind(exchange=RABBITMQ_EXCHANGE, queue=RABBITMQ_QUEUE_API, routing_key="tag_api")
     
