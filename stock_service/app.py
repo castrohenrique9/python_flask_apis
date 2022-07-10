@@ -8,6 +8,8 @@ from threading import Thread
 import pika
 from stock_service.api.resources import StockResource
 
+import json
+
 rabbitmq_channel = None
 
 def create_app(testing=False):
@@ -30,9 +32,8 @@ def register_blueprints(app):
 
 
 def callback(ch, method, properties, body):
-    print("Reading queue stock")
-    StockResource.get_stock_data(body)
-    print("Readed queue stock")
+    data = json.loads(body)
+    StockResource.get_stock_data(data["user_id"], data["stock_code"])
 
 
 def create_rabbitmq_channel_listen():

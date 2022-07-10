@@ -8,6 +8,12 @@ from werkzeug.exceptions import BadRequestKeyError
 from stock_service.api.schemas import StockSchema
 from stock_service.config import URL_EXTERNAL_STOCK
 
+import pika
+from pika.exceptions import (
+    StreamLostError,
+    ConnectionClosedByBroker
+)
+
 import urllib.request, json, datetime
 
 from stock_service.api.exceptions import (
@@ -79,22 +85,41 @@ class StockResource(Resource):
             raise GenericException("Error to convert date")
 
     @classmethod
-    def publish_queue(cls, data):
+    def publish_queue(cls, user_id: int, data):
         """Request data from external service with URL default and RabbitMQ"""
         from stock_service.app import create_rabbitmq_channel_publish
         from stock_service.config import RABBITMQ_EXCHANGE
         try:
             rabbitmq_channel = create_rabbitmq_channel_publish()
-            rabbitmq_channel.basic_publish(exchange=RABBITMQ_EXCHANGE, routing_key="tag_api", body=json.dumps(data))
+            # rabbitmq_channel.confirm_delivery()
+            rabbitmq_channel.basic_publish(
+                exchange=RABBITMQ_EXCHANGE, 
+                routing_key="tag_api", 
+                body=json.dumps({"user_id": user_id, "data": data})
+            )
+            
         except URLError:
             raise GenericException(
                 "An error trying publish queue"
+            )
+        except StreamLostError:
+            raise GenericException(
+                "An internal error stream lost"
+            )
+        except ConnectionClosedByBroker:
+            raise GenericException(
+                "An internal error because blocker closed connection"
             )
         except Exception as e:
             raise GenericException(
                 "An internal error"
             )
     
+    @classmethod
+    def get_stock_data(cls, user_id: int, stock_code: str): # noga S2159
+        stock_data = StockResource.get_stock_data(stock_code)
+        StockResource.publish_queue(user_id, stock_data)
+
     @classmethod
     def get_stock_data(cls, stock_code: str):
         stock_data_obj = None
@@ -108,8 +133,7 @@ class StockResource(Resource):
         stock_data_obj["date"] = StockResource.convert_date(stock_data_obj["date"])
         stock_data_obj["time"] = StockResource.convert_time(stock_data_obj["time"])
 
-        dump = schema.dump(stock_data_obj)
-        StockResource.publish_queue(dump)
+        return schema.dump(stock_data_obj)
 
     def get(self):
         try:

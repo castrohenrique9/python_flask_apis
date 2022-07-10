@@ -3,6 +3,7 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from api_service import api
+from api_service.api.resources import StockQuery
 from api_service.extensions import db, rabbitmq_connection
 from api_service.extensions import migrate
 
@@ -46,10 +47,7 @@ def create_jwt(app):
 
 
 def callback(ch, method, properties, body):
-    print("Reading queue api")
-    print(body)
-    # StockResource.get_stock_data(body)
-    print("Readed queue api")
+    StockQuery.listen_queue(body)
 
 
 def create_rabbitmq_channel_listen():

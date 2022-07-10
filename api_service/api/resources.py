@@ -14,6 +14,7 @@ from api_service.api.schemas import (
 )
 
 from api_service.config import URL_EXTERNAL_STOCK, RABBITMQ_EXCHANGE
+from pika.exceptions import StreamLostError
 
 from api_service.auth import security
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -81,39 +82,43 @@ class StockQuery(Resource):
         return StockQuery.extract_content_external_data(json_load)
 
     @classmethod
-    def publish_queue(cls, stock_code):
+    def publish_queue(cls, user_id: int, stock_code: str):
         """Request data from external service with URL default and RabbitMQ"""
         from api_service.app import create_rabbitmq_channel_publish
         try:
+            data = {"user_id": user_id, "stock_code": stock_code}
+            data = json.dumps(data)
+
             rabbitmq_channel_publish = create_rabbitmq_channel_publish()
-            rabbitmq_channel_publish.basic_publish(exchange=RABBITMQ_EXCHANGE, routing_key="tag_stock", body=stock_code)
-            
-            #from stock_service.extensions import rabbitmq_connection
-            #if rabbitmq_connection.is_open:
-            #    rabbitmq_connection.close()
-            
+            rabbitmq_channel_publish.basic_publish(exchange=RABBITMQ_EXCHANGE, routing_key="tag_stock", body=data)
         except URLError:
-            raise GenericException(
-                "An error trying publish queue"
-            )
+            raise GenericException("An error trying publish queue")
+        except StreamLostError:
+            raise GenericException("An error of Stream lost")
+
+        return True
+    
+    @classmethod
+    def listen_queue(cls, data):
+        data = json.loads(data)
+        try:
+            History.save(data["user_id"], data["data"])
+        except IntegrityError:
+            pass
+        
+        schema = StockInfoSchema()
+        return schema.dump(data["data"])
 
     @jwt_required()
     def get(self):
-        data_from_service = None
-        schema = StockInfoSchema()
-
         try:
-            data_from_service = StockQuery.publish_queue(request.args["q"])
-            # data_from_service = StockQuery.get_external_data(request.args["q"])
+            published = StockQuery.publish_queue(get_jwt_identity(), request.args["q"])
+            if published:
+                return {"message": "Queue published"}, 200
         except BadRequestKeyError:
             raise ParameterException("Invalid parameter")
-
-        try:
-            History.save(get_jwt_identity(), data_from_service)
-        except IntegrityError:
-            pass
-
-        return schema.dump(data_from_service)
+        
+        raise GenericException("Erro trying publish task in queue")
 
 
 class History(Resource):
