@@ -13,7 +13,7 @@ from api_service.api.schemas import (
     StatsInfoSchema
 )
 
-from api_service.config import URL_EXTERNAL_STOCK
+from api_service.config import URL_EXTERNAL_STOCK, RABBITMQ_EXCHANGE
 
 from api_service.auth import security
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -83,22 +83,19 @@ class StockQuery(Resource):
     @classmethod
     def publish_queue(cls, stock_code):
         """Request data from external service with URL default and RabbitMQ"""
-        from api_service.app import create_rabbitmq_channel
-        from api_service.config import RABBITMQ_EXCHANGE
+        from api_service.app import create_rabbitmq_channel_publish
         try:
-            rabbitmq_channel = create_rabbitmq_channel()
-            rabbitmq_channel.basic_publish(exchange=RABBITMQ_EXCHANGE, routing_key="tag_stock", body=stock_code)
+            rabbitmq_channel_publish = create_rabbitmq_channel_publish()
+            rabbitmq_channel_publish.basic_publish(exchange=RABBITMQ_EXCHANGE, routing_key="tag_stock", body=stock_code)
             
-            from stock_service.extensions import rabbitmq_connection
-            if rabbitmq_connection.is_open:
-                rabbitmq_connection.close()
+            #from stock_service.extensions import rabbitmq_connection
+            #if rabbitmq_connection.is_open:
+            #    rabbitmq_connection.close()
             
         except URLError:
             raise GenericException(
                 "An error trying publish queue"
             )
-        
-        return StockQuery.get_external_data(stock_code)
 
     @jwt_required()
     def get(self):
@@ -107,6 +104,7 @@ class StockQuery(Resource):
 
         try:
             data_from_service = StockQuery.publish_queue(request.args["q"])
+            # data_from_service = StockQuery.get_external_data(request.args["q"])
         except BadRequestKeyError:
             raise ParameterException("Invalid parameter")
 

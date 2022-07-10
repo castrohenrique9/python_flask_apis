@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 from urllib.error import URLError
-from flask import request
+from flask import jsonify, request
 from flask_restful import Resource
 from werkzeug.exceptions import BadRequestKeyError
 
@@ -79,7 +79,24 @@ class StockResource(Resource):
             raise GenericException("Error to convert date")
 
     @classmethod
-    def get_stock_data(cls, stock_code):
+    def publish_queue(cls, data):
+        """Request data from external service with URL default and RabbitMQ"""
+        from stock_service.app import create_rabbitmq_channel_publish
+        from stock_service.config import RABBITMQ_EXCHANGE
+        try:
+            rabbitmq_channel = create_rabbitmq_channel_publish()
+            rabbitmq_channel.basic_publish(exchange=RABBITMQ_EXCHANGE, routing_key="tag_api", body=json.dumps(data))
+        except URLError:
+            raise GenericException(
+                "An error trying publish queue"
+            )
+        except Exception as e:
+            raise GenericException(
+                "An internal error"
+            )
+    
+    @classmethod
+    def get_stock_data(cls, stock_code: str):
         stock_data_obj = None
         schema = StockSchema()
 
@@ -91,7 +108,8 @@ class StockResource(Resource):
         stock_data_obj["date"] = StockResource.convert_date(stock_data_obj["date"])
         stock_data_obj["time"] = StockResource.convert_time(stock_data_obj["time"])
 
-        return schema.dump(stock_data_obj)
+        dump = schema.dump(stock_data_obj)
+        StockResource.publish_queue(dump)
 
     def get(self):
         try:
