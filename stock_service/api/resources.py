@@ -79,16 +79,12 @@ class StockResource(Resource):
             raise GenericException("Error to convert date")
 
     @classmethod
-    def get_stock_data(cls, body):
-        print("leeeeeeeeeeeeeeeeeeeeeeee")
-        print(body)
-
-    def get(self):
+    def get_stock_data(cls, stock_code):
         stock_data_obj = None
         schema = StockSchema()
 
         try:
-            stock_data_obj = StockResource.get_external_data(request.args["q"])
+            stock_data_obj = StockResource.get_external_data(stock_code)
         except BadRequestKeyError:
             raise ParameterException("Invalid parameter")
 
@@ -96,3 +92,9 @@ class StockResource(Resource):
         stock_data_obj["time"] = StockResource.convert_time(stock_data_obj["time"])
 
         return schema.dump(stock_data_obj)
+
+    def get(self):
+        try:
+            return StockResource.get_stock_data(request.args["q"])
+        except BadRequestKeyError:
+            raise ParameterException("Invalid parameter")
