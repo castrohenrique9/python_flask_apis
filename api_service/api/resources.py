@@ -75,13 +75,29 @@ class StockQuery(Resource):
 
         return StockQuery.extract_content_external_data(json_load)
 
+    @classmethod
+    def get_external_data_queue(cls, stock_code):
+        """Request data from external service with URL default and RabbitMQ"""
+        from api_service.app import create_rabbitmq_channel
+        from api_service.config import RABBITMQ_EXCHANGE
+        try:
+            rabbitmq_channel = create_rabbitmq_channel()
+            rabbitmq_channel.basic_publish(exchange=RABBITMQ_EXCHANGE, routing_key="tag_stock", body=stock_code)
+            #rabbitmq_connection.close()
+        except URLError:
+            raise GenericException(
+                "An error trying publish queue"
+            )
+
+        return StockQuery.get_external_data(stock_code)
+
     @jwt_required()
     def get(self):
         data_from_service = None
         schema = StockInfoSchema()
 
         try:
-            data_from_service = StockQuery.get_external_data(request.args["q"])
+            data_from_service = StockQuery.get_external_data_queue(request.args["q"])
         except BadRequestKeyError:
             raise ParameterException("Invalid parameter")
 
