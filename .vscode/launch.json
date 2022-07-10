@@ -1,0 +1,70 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "Stock Python: Flask",
+            "type": "python",
+            "request": "launch",
+            "module": "flask",
+            "env": {
+                "FLASK_APP": "stock_service/app.py",
+                "FLASK_ENV": "development",
+                "SECRET_KEY": "CBnawGFQMiFH0fO8G2rML8kizDPy9zlY_FJbLQyRBFA",
+                "URL_EXTERNAL_STOCK": "https://stooq.com/q/l/?f=sd2t2ohlcvn&h&e=json&s={}",
+                "RABBITMQ_HOST": "127.0.0.1",
+                "RABBITMQ_PORT": "5672",
+                "RABBITMQ_VHOST": "/",
+                "RABBITMQ_USER": "guest",
+                "RABBITMQ_PWD": "guest",
+                "RABBITMQ_EXCHANGE": "jobsity",
+                "RABBITMQ_EXCHANGE_TYPE": "direct",
+                "RABBITMQ_QUEUE_STOCK": "stock_service",
+                "RABBITMQ_QUEUE_API": "api_service"
+            },
+            "args": [
+                "run",
+                "--no-debugger",
+                "--port",
+                "5001"
+            ],
+            "jinja": true,
+            "justMyCode": true
+        },
+        {
+            "name": "API Python: Flask",
+            "type": "python",
+            "request": "launch",
+            "module": "flask",
+            "env": {
+                "FLASK_APP": "api_service/app.py",
+                "FLASK_ENV": "development",
+                "DATABASE_URI": "sqlite:///api_service.sqlite3",
+                "SECRET_KEY": "bCuwmpkc_o14xHsHVD5REg9TDGifzSalHoPeXBkBJEM",
+                "JWT_BLACKLIST_ENABLED": "True",
+                "URL_EXTERNAL_STOCK": "http://127.0.0.1:5001/api/v1/stock/?q={}",
+                "QUERY_ROW_LIMIT_DEFAULT": "5",
+                "RABBITMQ_HOST": "127.0.0.1",
+                "RABBITMQ_PORT": "5672",
+                "RABBITMQ_VHOST": "/",
+                "RABBITMQ_USER": "guest",
+                "RABBITMQ_PWD": "guest",
+                "RABBITMQ_EXCHANGE": "jobsity",
+                "RABBITMQ_EXCHANGE_TYPE": "direct",
+                "RABBITMQ_QUEUE_STOCK": "stock_service",
+                "RABBITMQ_QUEUE_API": "api_service"
+            },
+            "args": [
+                "run",
+                "--no-debugger",
+                "--port",
+                "5000"
+            ],
+            "jinja": true,
+            "justMyCode": true
+        }
+    ]
+}
