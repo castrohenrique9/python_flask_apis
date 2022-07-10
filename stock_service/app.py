@@ -4,6 +4,8 @@ from stock_service import api
 from stock_service.extensions import rabbitmq_connection
 from stock_service.config import RABBITMQ_EXCHANGE, RABBITMQ_EXCHANGE_TYPE, RABBITMQ_QUEUE_STOCK
 
+from stock_service.api.resources import StockResource
+
 rabbitmq_channel = None
 
 def create_app(testing=False):
@@ -24,7 +26,8 @@ def register_blueprints(app):
 
 def callback_test(ch, method, properties, body):
     print("liiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii 2222")
-    print(body)
+    StockResource.get_stock_data(body=body)
+
 
 def create_rabbitmq_channel():
     rabbitmq_channel = rabbitmq_connection.channel()

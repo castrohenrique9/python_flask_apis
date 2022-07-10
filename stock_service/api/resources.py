@@ -78,6 +78,11 @@ class StockResource(Resource):
         except ValueError:
             raise GenericException("Error to convert date")
 
+    @classmethod
+    def get_stock_data(cls, body):
+        print("leeeeeeeeeeeeeeeeeeeeeeee")
+        print(body)
+
     def get(self):
         stock_data_obj = None
         schema = StockSchema()
