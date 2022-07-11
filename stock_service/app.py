@@ -34,7 +34,7 @@ def register_blueprints(app):
 def callback(ch, method, properties, body):
     data = json.loads(body)
     from stock_service.api import queues as rabbit
-    rabbit.get_stock_data_queue(data["user_id"], data["stock_code"])
+    rabbit.read(data["user_id"], data["stock_code"])
 
 
 def create_rabbitmq_channel_listen():

@@ -10,7 +10,7 @@ from stock_service.api.resources import StockResource
 
 import json
 
-def publish_queue(user_id: int, data):
+def publish(user_id: int, data):
         """Request data from external service with URL default and RabbitMQ"""
         from stock_service.app import create_rabbitmq_channel_publish
         from stock_service.config import RABBITMQ_EXCHANGE
@@ -38,6 +38,6 @@ def publish_queue(user_id: int, data):
             )
 
 
-def get_stock_data_queue(user_id: int, stock_code: str):
+def read(user_id: int, stock_code: str):
     stock_data = StockResource.get_stock_data(stock_code)
-    publish_queue(user_id, stock_data)
+    publish(user_id, stock_data)

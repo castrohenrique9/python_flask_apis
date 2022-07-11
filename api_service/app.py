@@ -6,6 +6,7 @@ from api_service import api
 from api_service.api.resources import StockQuery
 from api_service.extensions import db, rabbitmq_connection
 from api_service.extensions import migrate
+from api_service.api import queues as rabbit
 
 from threading import Thread
 import pika
@@ -47,7 +48,7 @@ def create_jwt(app):
 
 
 def callback(ch, method, properties, body):
-    StockQuery.listen_queue(body)
+    rabbit.read(body)
 
 
 def create_rabbitmq_channel_listen():
