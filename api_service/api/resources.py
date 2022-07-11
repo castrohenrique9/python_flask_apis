@@ -28,7 +28,7 @@ from api_service.api.exceptions import (
     UnauthorizedException,
 )
 
-from api_service import models
+from api_service.models import (History as HistoryModel, User as UserModel)
 from api_service.api import queues as rabbit
 
 
@@ -121,27 +121,22 @@ class History(Resource):
             raise GenericException("An error trying combine date and time")
 
     @classmethod
-    def save(cls, user_id, data):
-        #dt = History.convert_date(data["date"])
-        #tm = History.convert_time(data["time"])
-        #data["date"] = History.combineDateTime(dt, tm)
-        data["date"] = datetime.now()
+    def save(cls, user_id: int, data):
         data["user_id"] = user_id
-
-        history = models.History(data)
+        history = HistoryModel(data)
         history.save()
 
     @classmethod
     def find_by_id(cls, id):
-        return models.History.find_by_id(id)
+        return HistoryModel.find_by_id(id)
 
     @classmethod
     def find_all_by_user_id(cls, user_id):
-        return models.History.find_all_by_user_id(user_id)
+        return HistoryModel.find_all_by_user_id(user_id)
 
     @classmethod
     def find_stats(cls):
-        return models.History.find_stats()
+        return HistoryModel.find_stats()
 
     @jwt_required()
     def get(self):
@@ -159,7 +154,7 @@ class Stats(Resource):
     @jwt_required()
     def get(self):
         if UserLogin.is_admin(get_jwt_identity()):
-            stats = models.History.find_stats()
+            stats = HistoryModel.find_stats()
 
             schema = StatsInfoSchema()
             listing = [schema.dump(s) for s in stats]
@@ -171,7 +166,7 @@ class Stats(Resource):
 class UserLogin(Resource):
     @classmethod
     def is_admin(cls, user_id):
-        return True if models.User.find_by_id_admin(user_id) else False
+        return True if UserModel.find_by_id_admin(user_id) else False
 
     @classmethod
     def post(cls):

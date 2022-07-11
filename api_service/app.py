@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-from flask import Flask
+from flask import Flask, copy_current_request_context
 from flask_jwt_extended import JWTManager
 from api_service import api
 from api_service.api.resources import StockQuery
@@ -46,9 +46,13 @@ def create_jwt(app):
     jwt = JWTManager(app)
     return jwt
 
+rabbitmq_channel_listen = None
 
-def callback(ch, method, properties, body):
-    rabbit.read(body)
+#@copy_current_request_context
+#def context_bridge():
+#    #from api_service.api.views import callback
+#    rabbitmq_channel_listen.start
+#    #callback()
 
 
 def create_rabbitmq_channel_listen():
@@ -57,8 +61,10 @@ def create_rabbitmq_channel_listen():
     rabbitmq_channel_listen.queue_declare(queue=RABBITMQ_QUEUE_API)
     rabbitmq_channel_listen.queue_bind(exchange=RABBITMQ_EXCHANGE, queue=RABBITMQ_QUEUE_API, routing_key="tag_api")
     
+    from api_service.api.views import callback
     rabbitmq_channel_listen.basic_consume(queue=RABBITMQ_QUEUE_API, on_message_callback=callback, auto_ack=True)
-    
+
+    # thread = Thread(target=context_bridge)
     thread = Thread(target=rabbitmq_channel_listen.start_consuming)
     thread.start()
     print("Waiting for RabbitMQ messages in background")

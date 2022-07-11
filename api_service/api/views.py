@@ -26,6 +26,11 @@ api.add_resource(resources.History, "/history", endpoint="history")
 api.add_resource(resources.Stats, "/stats", endpoint="stats")
 
 
+def callback(ch, method, properties, body):
+    from api_service.api import queues as rabbit
+    rabbit.read(body)
+
+
 @blueprint.errorhandler(ValidationError)
 @blueprint.errorhandler(ParameterException)
 def handle_marshmallow_error(e):

@@ -2,11 +2,13 @@
 
 from os import times_result
 from sqlalchemy.ext.hybrid import hybrid_property
+from datetime import datetime as dt
+from flask import Flask
+
 from api_service.config import QUERY_ROW_LIMIT_DEFAULT
 from api_service.extensions import db, pwd_context
 
-
-from flask import jsonify
+from flask import current_app, jsonify
 
 
 class User(db.Model):
@@ -67,7 +69,7 @@ class History(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
     def __init__(self, data):
-        self.date = data["date"]
+        self.date = dt.now()
         self.name = data["name"]
         self.symbol = data["symbol"]
         self.open = data["open"]
@@ -110,6 +112,17 @@ class History(db.Model):
             .limit(QUERY_ROW_LIMIT_DEFAULT)
         )
 
+    
     def save(self):
-        db.session.add(self)
-        db.session.commit()
+        try:
+            app = Flask(__name__)
+
+            with app.app_context():
+                app.config.from_object("api_service.config")
+                db.init_app(app)
+                db.session.add(self)
+                db.session.commit()
+                
+            return self
+        except Exception as e:
+            print("Error")

@@ -33,11 +33,13 @@ def publish(user_id: int, stock_code: str):
 def read(data):
     from api_service.api.resources import History
     
+    schema = StockInfoSchema()
     data = json.loads(data)
     try:
         History.save(data["user_id"], data["data"])
-    except IntegrityError:
-        pass
+    except IntegrityError as e:
+        print("Error trying save History")
+    except Exception as e:
+        print("Error crazy")
     
-    schema = StockInfoSchema()
     return schema.dump(data["data"])
