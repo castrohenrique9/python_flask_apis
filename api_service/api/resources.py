@@ -122,9 +122,10 @@ class History(Resource):
 
     @classmethod
     def save(cls, user_id, data):
-        dt = History.convert_date(data["date"])
-        tm = History.convert_time(data["time"])
-        data["date"] = History.combineDateTime(dt, tm)
+        #dt = History.convert_date(data["date"])
+        #tm = History.convert_time(data["time"])
+        #data["date"] = History.combineDateTime(dt, tm)
+        data["date"] = datetime.now()
         data["user_id"] = user_id
 
         history = models.History(data)
