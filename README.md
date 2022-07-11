@@ -86,10 +86,13 @@ The following features are optional to implement, but if you do, you'll be ranke
 
 ### API Service
 * Set .flaskenv file for `api_service`:
-  * `URL_EXTERNAL_STOCK` with query param `q={}`: `URL_EXTERNAL_STOCK=https://YOUR_STOCK_SERVICE_WITH_FORMAT_PARAM`
-  * `SECRET_KEY` with your secret key
+  * `URL_EXTERNAL_STOCK` with query param `q={}`: `URL_EXTERNAL_STOCK=https://YOUR_STOCK_SERVICE/api/v1/stock/?q={}`.
+  * `SECRET_KEY`: set your secret key.
   * `QUERY_ROW_LIMIT_DEFAULT` with int. This value is used to limit the amount of records in `/stats`. Default value is 5.
 * Start the api service: `cd api_service ; flask db migrate; flask db upgrade ; flask run`
+* Create the minimum `users` with roles:
+  * One or more Admin
+  * One or more Users
 
 ## How to use project
 Example of endpoints and forms of filling out the request.
@@ -98,7 +101,7 @@ Example of endpoints and forms of filling out the request.
 * GET Stock `/api/v1/stock?q=dis.us`: see the data stock of external resource.
 
 ### API Service
-You need the Baerer Token for all endponits, except to Login.
+You need to pass the JWT Baerer Token for all endponits, except to Login.
 So get the access_token value in Login endpoint.
 
 * POST Login `/api/v1/login`: pass `username` and `password` in Body to get your access_token. 
