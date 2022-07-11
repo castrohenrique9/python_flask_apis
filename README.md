@@ -107,4 +107,4 @@ So get the access_token value in Login endpoint.
 * POST Login `/api/v1/login`: pass `username` and `password` in Body to get your access_token. 
 * GET Stock `/api/v1/stock?q=aapl.us`: pass parameter `q` with your symbol. View the data stock and save it to your history. You need Stock Service running.
 * GET History `api/v1/history`: see a list of your query history.
-* GET Stats `api/v1/stats`: see the most consuled symbols. You need to be an administrator to can access this endpoint.
+* GET Stats `api/v1/stats`: see the most consulted symbols. You need to be an administrator to can access this endpoint.
