@@ -1,7 +1,3 @@
-<div align="center">
-    <img src="https://raw.githubusercontent.com/Jobsity/ReactChallenge/main/src/assets/jobsity_logo_small.png"/>
-</div>
-
 # Flask Challenge
 
 ## Description
