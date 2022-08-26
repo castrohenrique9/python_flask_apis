@@ -20,7 +20,7 @@
                 "RABBITMQ_VHOST": "/",
                 "RABBITMQ_USER": "guest",
                 "RABBITMQ_PWD": "guest",
-                "RABBITMQ_EXCHANGE": "jobsity",
+                "RABBITMQ_EXCHANGE": "exchange1",
                 "RABBITMQ_EXCHANGE_TYPE": "direct",
                 "RABBITMQ_QUEUE_STOCK": "stock_service",
                 "RABBITMQ_QUEUE_API": "api_service"
@@ -52,7 +52,7 @@
                 "RABBITMQ_VHOST": "/",
                 "RABBITMQ_USER": "guest",
                 "RABBITMQ_PWD": "guest",
-                "RABBITMQ_EXCHANGE": "jobsity",
+                "RABBITMQ_EXCHANGE": "exchange1",
                 "RABBITMQ_EXCHANGE_TYPE": "direct",
                 "RABBITMQ_QUEUE_STOCK": "stock_service",
                 "RABBITMQ_QUEUE_API": "api_service"
